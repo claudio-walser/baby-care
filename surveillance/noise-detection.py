@@ -8,7 +8,7 @@ from pprint import pprint
 
 chunk = 1024
 volumeTreshold = 1024
-deviceIndex = 0
+deviceIndex = 1
 # time in seconds of noise detection until alarming the monitoring device
 alarmingTreshold = 30
 # time in seconds for an acceptable pause which is not interrupting the alarmingTreshold
@@ -17,6 +17,8 @@ acceptablePause = 5
 
 p = pyaudio.PyAudio()
 
+
+pprint(p.get_device_info_by_index(deviceIndex))
 
 
 stream = p.open(format=pyaudio.paInt16,
