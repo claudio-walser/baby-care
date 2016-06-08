@@ -42,9 +42,7 @@ while 1:
       noiseStartedTime = currentTime
     else:
       noiseDiff = currentTime - noiseStartedTime
-      print("time started: %s " % noiseStartedTime)
-      print("current detection: %s " % currentTime)
-      print("time diff since noise started: %s " % noiseDiff)
+      print("noise since: %s " % noiseDiff)
       if noiseDiff >= alarmingTreshold:
         print("Alarm Alarm")
 
