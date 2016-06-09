@@ -21,7 +21,7 @@ while True:
     print('deactivated')
   elif data == 'get status':
     with open('/root/baby-care/surveillance/status', 'r') as f:
-      f.read().strip()
+      print(f.read().strip())
   else:
     print('ignored')    
 
