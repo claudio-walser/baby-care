@@ -24,7 +24,7 @@ class Daemon (Daemon):
   noiseStartedTime = 0
   silenceStartedTime = 0
 
-  statusFile = "/Users/walsercl/Development/claudio/baby-care/surveillance/status"
+  statusFile = "/root/baby-care/surveillance/status"
 
   def setLogging(self, logging: logging):
     self.logging = logging
@@ -41,12 +41,9 @@ class Daemon (Daemon):
                 input_device_index = self.deviceIndex,
                 frames_per_buffer = self.chunk)
     
-    # maybe i can fetch the cursor here, since i now i have to commit after a update, it might work :p
+    f = open(self.statusFile, 'r')
     while True:
-      with open(self.statusFile, "rb") as f:
-        status = f.read().strip()
-      #accept connections from outside
-      self.logging.debug(status)
+      status = f.read().strip()
       self.listen(status)
         
 
@@ -59,7 +56,9 @@ class Daemon (Daemon):
       self.reset()
       self.logging.debug("inactive")
       return False
-
+    else:
+      self.logging("active")
+      return False
 
     currentTime = time.time()
 
