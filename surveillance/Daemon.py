@@ -14,7 +14,7 @@ class Daemon (Daemon):
   stream = False
   chunk = 1024
   volumeTreshold = 16
-  deviceIndex = 0
+  deviceIndex = 2
   # time in seconds of noise detection until alarming the monitoring device
   alarmingTreshold = 30
   # time in seconds for an acceptable pause which is not interrupting the alarmingTreshold
@@ -41,10 +41,13 @@ class Daemon (Daemon):
                 input_device_index = self.deviceIndex,
                 frames_per_buffer = self.chunk)
     
-    f = open(self.statusFile, 'r')
     while True:
+      f = open(self.statusFile, 'r')
       status = f.read().strip()
+      f.close()
+      self.logging.debug(status)
       self.listen(status)
+
         
 
   def reset(self):
@@ -54,9 +57,13 @@ class Daemon (Daemon):
   def listen(self, status: str):
     if status == "inactive":
       self.reset()
+      if self.stream.is_active():
+        self.stream.stop_stream()
       self.logging.debug("inactive")
       return False
     else:
+      if not self.stream.is_active():
+        self.stream.start_stream()
       self.logging("active")
       return False
 
