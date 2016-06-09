@@ -2,7 +2,10 @@
 
 import sys
 
-request = ''
+
+# call with nc
+# echo "set active" | nc 127.0.0.1 8081
+# echo "set inactive" | nc 127.0.0.1 8081
 
 while True:
   data = sys.stdin.readline().strip()
