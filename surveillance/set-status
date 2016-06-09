@@ -6,6 +6,7 @@ import sys
 # call with nc
 # echo "set active" | nc 127.0.0.1 8081
 # echo "set inactive" | nc 127.0.0.1 8081
+# echo "get status" | nc 127.0.0.1 8081
 
 while True:
   data = sys.stdin.readline().strip()
@@ -18,9 +19,11 @@ while True:
     with open('/root/baby-care/surveillance/status', 'w') as f:
       f.write('inactive')
     print('deactivated')
+  elif data == 'get status':
+    with open('/root/baby-care/surveillance/status', 'r') as f:
+      f.read().strip()
   else:
     print('ignored')    
 
   sys.stdout.flush()
   break;
-set-status 
