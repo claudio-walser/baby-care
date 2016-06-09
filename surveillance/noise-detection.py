@@ -8,7 +8,7 @@ from pprint import pprint
 
 chunk = 1024
 volumeTreshold = 1024
-deviceIndex = 2
+deviceIndex = 0
 # time in seconds of noise detection until alarming the monitoring device
 alarmingTreshold = 30
 # time in seconds for an acceptable pause which is not interrupting the alarmingTreshold

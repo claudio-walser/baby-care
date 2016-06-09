@@ -12,12 +12,13 @@ LOGFILE = '/var/log/surveillance.log'
 
 # Configure logging
 logging.basicConfig(filename=LOGFILE,level=logging.DEBUG)
+logging.captureWarnings(True)
 
 
 if __name__ == "__main__":
 
   daemon = Daemon(PIDFILE)
-
+  daemon.setLogging(logging)
   if len(sys.argv) == 2:
 
     if 'start' == sys.argv[1]:
