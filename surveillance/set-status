@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+
+import sys
+
+request = ''
+
+while True:
+  data = sys.stdin.readline().strip()
+  
+  if data == 'set active':
+    with open('/root/baby-care/surveillance/status', 'w') as f:
+      f.write('active')   
+    print('activated')
+  elif data == 'set inactive':
+    with open('/root/baby-care/surveillance/status', 'w') as f:
+      f.write('inactive')
+    print('deactivated')
+  else:
+    print('ignored')    
+
+  sys.stdout.flush()
+  break;
+set-status 

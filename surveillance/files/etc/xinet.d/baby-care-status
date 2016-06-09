@@ -1,0 +1,12 @@
+service baby-care-status
+{
+    protocol = tcp
+    disable = no
+    port = 8081
+    flags = REUSE
+    socket_type = stream
+    wait = no
+    user = root
+    server = /root/baby-care/surveillance/set-status
+    log_on_failure += USERID
+}
