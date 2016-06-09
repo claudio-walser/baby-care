@@ -8,7 +8,7 @@ from pprint import pprint
 
 chunk = 1024
 volumeTreshold = 1024
-deviceIndex = 1
+deviceIndex = 2
 # time in seconds of noise detection until alarming the monitoring device
 alarmingTreshold = 30
 # time in seconds for an acceptable pause which is not interrupting the alarmingTreshold
@@ -28,9 +28,8 @@ stream = p.open(format=pyaudio.paInt16,
                 input_device_index = deviceIndex,
                 frames_per_buffer=chunk)
 
-
-noiseStarted = False
-startTime = 0;
+noiseStartedTime = 0
+silenceStartedTime = 0
 
 while 1:
   currentTime = time.time()
@@ -38,23 +37,24 @@ while 1:
   data = stream.read(chunk)
   rms = audioop.rms(data, 2)  #width=2 for format=paInt16
   if rms >= volumeTreshold:
-    if noiseStarted == False:
-      noiseStarted = True
-      startTime = time.time()
+    silenceStartedTime = 0
+    if noiseStartedTime == 0:
+      noiseStartedTime = currentTime
     else:
-      timeDiff = currentTime - startTime
-      print("time started: %s " % startTime)
-      print("current detection: %s " % time.time())
-      print("time diff since noise started: %s " % timeDiff)
-      if timeDiff >= alarmingTreshold:
+      noiseDiff = currentTime - noiseStartedTime
+      print("noise since: %s " % noiseDiff)
+      if noiseDiff >= alarmingTreshold:
         print("Alarm Alarm")
 
     print(rms)
 
   else:
-    if noiseStarted == True:
-      timeDiff = currentTime - startTime
-      if timeDiff > acceptablePause:
-        noiseStarted = False
-        startTime = 0
+    if noiseStartedTime > 0:
+      if silenceStartedTime == 0:
+        silenceStartedTime = currentTime
+
+      silenceDiff = currentTime - silenceStartedTime
+      print("silence since: %s " % silenceDiff)
+      if silenceDiff > acceptablePause:
+        noiseStartedTime = 0
 
