@@ -65,7 +65,6 @@ class Daemon (Daemon):
     else:
       if self.stream == False:
         self.startAudioRecording()
-      return False
 
     currentTime = time.time()
 
