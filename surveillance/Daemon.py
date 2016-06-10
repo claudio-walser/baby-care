@@ -34,12 +34,6 @@ class Daemon (Daemon):
     self.audio = pyaudio.PyAudio()
 
     self.logging.debug(self.audio.get_device_info_by_index(self.deviceIndex))
-    self.stream = self.audio.open(format=pyaudio.paInt16,
-                channels=1,
-                rate=32000,
-                input=True,
-                input_device_index = self.deviceIndex,
-                frames_per_buffer = self.chunk)
     
     while True:
       f = open(self.statusFile, 'r')
@@ -48,23 +42,28 @@ class Daemon (Daemon):
       self.logging.debug(status)
       self.listen(status)
 
-        
-
-  def reset(self):
+  def stopAudioRecording(self):
     self.noiseStartedTime = 0
     self.silenceStartedTime = 0
+    self.stream.close()
+
+  def startAudioRecording(self):
+    self.stream = self.audio.open(format=pyaudio.paInt16,
+                channels=1,
+                rate=32000,
+                input=True,
+                input_device_index = self.deviceIndex,
+                frames_per_buffer = self.chunk)
 
   def listen(self, status: str):
     if status == "inactive":
       self.reset()
       if self.stream.is_active():
-        self.stream.stop_stream()
-      self.logging.debug("inactive")
+        self.stopAudioRecording()
       return False
     else:
       if not self.stream.is_active():
-        self.stream.start_stream()
-      self.logging("active")
+        self.startAudioRecording()
       return False
 
     currentTime = time.time()
