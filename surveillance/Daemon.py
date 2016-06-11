@@ -36,11 +36,17 @@ class Daemon (Daemon):
     self.logging.debug(self.audio.get_device_info_by_index(self.deviceIndex))
 
     while True:
-      f = open(self.statusFile, 'r')
-      status = f.read().strip()
-      f.close()
-      self.logging.debug(status)
-      self.listen(status)
+
+      try:
+
+        f = open(self.statusFile, 'rb')
+        status = f.read().strip()
+        f.close()
+        self.logging.debug(status)
+        self.listen(status)
+          # coode in here
+      except Exception as e:
+        logging.error(e)
 
   def stopAudioRecording(self):
     self.noiseStartedTime = 0
@@ -58,7 +64,6 @@ class Daemon (Daemon):
 
   def listen(self, status: str):
     if status == "inactive":
-      self.reset()
       if not self.stream == False:
         self.stopAudioRecording()
       return False
