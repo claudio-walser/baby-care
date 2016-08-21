@@ -46,7 +46,7 @@ while 1:
       if noiseDiff >= alarmingTreshold:
         print("Alarm Alarm")
 
-    print(rms)
+    print('volume: ' . rms)
 
   else:
     if noiseStartedTime > 0:

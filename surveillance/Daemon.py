@@ -2,98 +2,108 @@
 
 from daemon import Daemon
 import logging
-import audioop
-import pyaudio
 import time
+
+from surveillance.Sensors.Audio import Audio
+from surveillance.Sensors.Grove import Grove
 
 from pprint import pprint
 
 class Daemon (Daemon):
 
-  audio = False
-  stream = False
-  chunk = 1024
-  volumeTreshold = 16
-  deviceIndex = 2
+
+  volumeTreshold = 32
   # time in seconds of noise detection until alarming the monitoring device
-  alarmingTreshold = 30
+  alarmingTreshold = 10
   # time in seconds for an acceptable pause which is not interrupting the alarmingTreshold
   acceptablePause = 5
 
 
+  alarming = True
   noiseStartedTime = 0
   silenceStartedTime = 0
 
-  statusFile = "/root/baby-care/surveillance/status"
+  statusFile = "/home/baby-care/baby-care/surveillance-status"
+  status = 'active'
+
 
   def setLogging(self, logging: logging):
     self.logging = logging
-
+  
   def run(self):
+    sensorGrove = Grove()
+    sensorGrove.setup()
 
-    self.audio = pyaudio.PyAudio()
-
-    self.logging.debug(self.audio.get_device_info_by_index(self.deviceIndex))
+    sensorAudio = Audio()
+    sensorAudio.setup()
 
     while True:
 
       try:
+        self.readStatus()
 
-        f = open(self.statusFile, 'rb')
-        status = f.read().strip()
-        f.close()
-        self.logging.debug(status)
-        self.listen(status)
-          # coode in here
+        humidity = sensorGrove.readHumidity()
+        temperature = sensorGrove.readTemperature()
+        airQuality = sensorGrove.readAirQuality()
+        volume = sensorAudio.readVolume()
+        isAlarm = self.isAlarming(volume)
+
+        info = {
+          'status': self.status,
+          'isAlarm': isAlarm,
+          'volume': volume,
+          'temperature': temperature,
+          'humidity': humidity,
+          'airQuality': airQuality
+        }
+
+        self.logging.debug(info)
+
       except Exception as e:
         logging.error(e)
 
-  def stopAudioRecording(self):
+  def readStatus(self):
+    f = open(self.statusFile, 'rb')
+    self.status = f.read().decode("utf-8").strip()
+    f.close()
+
+  def startAlarming(self):
+    self.alarming = True
+
+  def stopAlarming(self):
     self.noiseStartedTime = 0
     self.silenceStartedTime = 0
-    self.stream.close()
-    self.stream = False
+    self.alarming = False
 
-  def startAudioRecording(self):
-    self.stream = self.audio.open(format=pyaudio.paInt16,
-                channels=1,
-                rate=32000,
-                input=True,
-                input_device_index = self.deviceIndex,
-                frames_per_buffer = self.chunk)
 
-  def listen(self, status: str):
-    if status == "inactive":
-      if not self.stream == False:
-        self.stopAudioRecording()
+  def isAlarming(self, volume):
+    if self.status == "inactive":
+      if not self.alarming == False:
+        self.stopAlarming()
       return False
     else:
-      if self.stream == False:
-        self.startAudioRecording()
+      if self.alarming == False:
+        self.startAlarming()
 
     currentTime = time.time()
 
-    data = self.stream.read(self.chunk)
-    rms = audioop.rms(data, 2)  #width=2 for format=paInt16
-    if rms >= self.volumeTreshold:
+
+    if volume >= self.volumeTreshold:
       self.silenceStartedTime = 0
       if self.noiseStartedTime == 0:
         self.noiseStartedTime = currentTime
       else:
         noiseDiff = currentTime - self.noiseStartedTime
-        self.logging.debug("noise since: %s " % noiseDiff)
+        #self.logging.debug("noise since: %s " % noiseDiff)
         if noiseDiff >= self.alarmingTreshold:
-          self.logging.debug("Alarm Alarm")
-
-      self.logging.debug(rms)
-
+          return True
     else:
       if self.noiseStartedTime > 0:
         if self.silenceStartedTime == 0:
           self.silenceStartedTime = currentTime
 
         silenceDiff = currentTime - self.silenceStartedTime
-        self.logging.debug("silence since: %s " % silenceDiff)
+        #self.logging.debug("silence since: %s " % silenceDiff)
         if silenceDiff > self.acceptablePause:
           self.noiseStartedTime = 0
-
+    return False
