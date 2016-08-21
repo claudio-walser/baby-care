@@ -8,19 +8,21 @@ import sys
 # echo "set inactive" | nc 127.0.0.1 8081
 # echo "get status" | nc 127.0.0.1 8081
 
+statusFile = '/home/baby-care/baby-care/surveillance-status'
+
 while True:
   data = sys.stdin.readline().strip()
   
   if data == 'set active':
-    with open('/root/baby-care/surveillance/status', 'w') as f:
+    with open(statusFile, 'w') as f:
       f.write('active')   
     print('activated')
   elif data == 'set inactive':
-    with open('/root/baby-care/surveillance/status', 'w') as f:
+    with open(statusFile, 'w') as f:
       f.write('inactive')
     print('deactivated')
   elif data == 'get status':
-    with open('/root/baby-care/surveillance/status', 'r') as f:
+    with open(statusFile, 'r') as f:
       print(f.read().strip())
   else:
     print('ignored')    

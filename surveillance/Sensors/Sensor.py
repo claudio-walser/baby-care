@@ -21,5 +21,5 @@ class Sensor (object):
 		if time.time() - self.lastTime > 0.5:
 			lastTime = time.time()
 			[self.temperature, self.humidity] = grovepi.dht(self.dhtSensor, self.dhtSensorType)
-			self.airQuality = 'NaN' #grovepi.analogRead(self.airQualitySensor)
-
+			#self.airQuality = 'NaN'
+			self.airQuality = grovepi.analogRead(self.airQualitySensor)

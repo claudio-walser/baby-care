@@ -1,3 +1,6 @@
+# add to /etc/services
+# baby-care-status 8081/tcp                       # baby-care-status server
+
 service baby-care-status
 {
     protocol = tcp
@@ -7,6 +10,6 @@ service baby-care-status
     socket_type = stream
     wait = no
     user = root
-    server = /root/baby-care/surveillance/set-status
+    server = /home/baby-care/baby-care/surveillance/set-status
     log_on_failure += USERID
 }

@@ -3,3 +3,20 @@ raspivid -o - -t 0 -hf -w 480 -h 320 -fps 25 | cvlc -vvv stream:///dev/stdin --s
 cvlc v4l2:///dev/video0:width=480:height=320 :v4l2-standard= :input-slave=alsa://hw:1,0 :live-caching=300 :sout="#transcode{vcodec=WMV2,vb=800,scale=1,acodec=wma2,ab=128,channels=2, samplerate=44100}:http{dst=:8080/stream.wmv}"
 
 raspivid -o - -t 0 -hf -w 480 -h 320 -fps 25 | cvlc -vvv stream:///dev/stdin --sout '#standard{access=http,mux=ts,dst=:8080}' :demux=h264
+
+raspivid -o - -t 0 -w 1920 -h 1080 | cvlc stream:///dev/stdin :v4l2-standard= :input-slave=alsa://hw:2,0 :live-caching=300 :sout="#transcode{vcodec=WMV2,vb=800,scale=1,acodec=wma2,ab=128,channels=2, samplerate=44100}:http{dst=:8085/stream.wmv}"
+
+
+sudo raspivid -o - -t 0 -n | cvlc -vvv stream:///dev/stdin :input-slave=alsa://plughw:1,0 :sout='#rtp{sdp=rtsp://:8554/}' :demux=h264
+
+
+
+sudo cvlc v4l2:///dev/video0:width=480:height=320 :v4l2-standard= :input-slave=alsa://plughw:1,0 :live-caching=300 :sout="#transcode{vcodec=WMV2,vb=800,scale=1,acodec=wma2,ab=128,channels=2, samplerate=44100}:http{dst=:8085/stream.wmv}"
+
+
+cvlc v4l2:///dev/video0 :v4l2-standard=ALL :input-slave=alsa://hw:0,0 :live-caching=300  ':sout=#transcode{vcodec=mp4v,vb=3500,width=1920,height=1080,acodec=mp3,ab=192,channels=2,samplerate=44100}:http{mux=ts,dst=:8085/stream.wmv}
+
+
+
+# working on mate no sound on raspbian
+cvlc v4l2:///dev/video0:width=480:height=320 :v4l2-standard= :input-slave=alsa://plughw:1,0 :live-caching=300 :sout="#transcode{vcodec=WMV2,vb=800,scale=1,acodec=wma2,ab=128,channels=2, samplerate=44100}:http{dst=:8080/stream.wmv}"
