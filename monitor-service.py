@@ -4,11 +4,11 @@ from daemon import Daemon
 import sys
 import time
 import logging
-from surveillance.Daemon import Daemon as SurveillanceDaemon
+from monitor.Daemon import Daemon as MonitorDaemon
 
 
-PIDFILE = '/var/run/surveillance.pid'
-LOGFILE = '/var/log/surveillance.log'
+PIDFILE = '/var/run/monitor.pid'
+LOGFILE = '/var/log/monitor.log'
 
 # Configure logging
 logging.basicConfig(filename=LOGFILE,level=logging.DEBUG)
@@ -17,7 +17,7 @@ logging.captureWarnings(True)
 
 if __name__ == "__main__":
 
-  daemon = SurveillanceDaemon(PIDFILE)
+  daemon = MonitorDaemon(PIDFILE)
   daemon.setLogging(logging)
   if len(sys.argv) == 2:
 
@@ -46,9 +46,9 @@ if __name__ == "__main__":
         pid = None
 
       if pid:
-        print('SurveillanceDaemon is running as pid %s' % pid)
+        print('MonitorDaemon is running as pid %s' % pid)
       else:
-        print('SurveillanceDaemon is not running.')
+        print('MonitorDaemon is not running.')
 
     else:
       print('Unknown command')

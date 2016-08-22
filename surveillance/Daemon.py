@@ -3,6 +3,8 @@
 from daemon import Daemon
 import logging
 import time
+import socket
+import json
 
 from surveillance.Sensors.Audio import Audio
 from surveillance.Sensors.Grove import Grove
@@ -11,6 +13,9 @@ from pprint import pprint
 
 class Daemon (Daemon):
 
+  port = 8082
+  host = '10.20.1.98'
+  socket = False
 
   volumeTreshold = 32
   # time in seconds of noise detection until alarming the monitoring device
@@ -37,6 +42,11 @@ class Daemon (Daemon):
     sensorAudio = Audio()
     sensorAudio.setup()
 
+    self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # listen on main port for game input
+    self.socket.bind((self.host, self.port))
+    self.socket.listen(5)
+
     while True:
 
       try:
@@ -56,7 +66,7 @@ class Daemon (Daemon):
           'humidity': humidity,
           'airQuality': airQuality
         }
-
+        self.socket.send(json.dump(info))
         self.logging.debug(info)
 
       except Exception as e:
