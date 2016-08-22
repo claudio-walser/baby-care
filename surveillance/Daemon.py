@@ -6,6 +6,8 @@ import time
 import socket
 import json
 
+from surveillance.Video import Video
+
 from surveillance.Sensors.Audio import Audio
 from surveillance.Sensors.Grove import Grove
 
@@ -36,6 +38,8 @@ class Daemon (Daemon):
     self.logging = logging
   
   def run(self):
+    video = Video()
+
     sensorGrove = Grove()
     sensorGrove.setup()
 
@@ -50,6 +54,7 @@ class Daemon (Daemon):
     while True:
 
       try:
+        video.run()
         self.readStatus()
 
         humidity = sensorGrove.readHumidity()
